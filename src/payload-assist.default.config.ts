@@ -1,11 +1,16 @@
-import { createWithConfigRules, RuleSet } from "./utils/withConfigRules";
+import { Config } from "payload";
 import { withResponse } from "./utils/withResponse";
 import { withDtoReadHook } from "./utils/withDtoReadHook";
+import { Dto } from "./types/Dto";
+import { plainToInstance } from "class-transformer";
+import "reflect-metadata";
+import { PayloadAssistConfig } from "./types/PayloadAssistConfig";
 
-export const rules: RuleSet = {
-    disableQraphQL: (config) => config.graphQL?.disable === true,
-    collectionsEndpointsUseWithResponse: (config) =>
-      !!config.collections?.every((collection) => {
+export default {
+  ruleSet: {
+    disableQraphQL: (config: Config) => config.graphQL?.disable === true,
+    collectionsEndpointsUseWithResponse: (config: Config) =>
+      config.collections?.every((collection) => {
         if (!collection.endpoints) return true;
         return collection.endpoints.every((endpoint) => {
           const isWithResponse = (
@@ -16,8 +21,8 @@ export const rules: RuleSet = {
           return isWithResponse;
         });
       }),
-    collectionsUseWithDtoReadHook: (config) =>
-      !!config.collections?.every((collection) => {
+    collectionsUseWithDtoReadHook: (config: Config) =>
+      config.collections?.every((collection) => {
         if (!collection.hooks?.afterRead)
           throw `The collection "${collection.slug}" needs to have an afterRead hook to use withDtoReadHook.`;
         return collection.hooks.afterRead.every((hook) => {
@@ -29,6 +34,10 @@ export const rules: RuleSet = {
           return isWithDtoReadHook;
         });
       }),
-  };
-  
-export default createWithConfigRules(rules);
+  },
+  transformAndValidate: (dto: new () => Dto, data: unknown): Dto => {
+    return plainToInstance(dto, data, {
+      excludeExtraneousValues: true,
+    });
+  },
+} as PayloadAssistConfig;

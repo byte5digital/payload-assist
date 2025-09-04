@@ -1,5 +1,5 @@
 {
-  "name": "payload-assistant",
+  "name": "payload-assist",
   "version": "0.1.0",
   "description": "A TypeScript library providing DTO utilities and validation hooks for Payload CMS",
   "main": "./dist/index.js",
@@ -19,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:byte5digital/payload-assistant.git"
+    "url": "git@github.com:byte5digital/payload-assist.git"
   },
   "keywords": [
     "payload",
@@ -37,11 +37,6 @@
       "import": "./dist/index.js",
       "require": "./dist/index.js",
       "types": "./dist/index.d.ts"
-    },
-    "./default": {
-      "import": "./dist/defaultWithConfigRules.js",
-      "require": "./dist/defaultWithConfigRules.js",
-      "types": "./dist/defaultWithConfigRules.d.ts"
     }
   },
   "peerDependencies": {

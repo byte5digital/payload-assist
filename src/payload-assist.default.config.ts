@@ -4,7 +4,7 @@ import { withDtoReadHook } from "./utils/withDtoReadHook";
 import { Dto } from "./types/Dto";
 import { plainToInstance } from "class-transformer";
 import "reflect-metadata";
-import { PayloadAssistConfig } from "./types/PayloadAssistConfig";
+import { PayloadAssistConfig } from "./types/config";
 
 export default {
   ruleSet: {

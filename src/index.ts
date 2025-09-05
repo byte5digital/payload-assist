@@ -1,11 +1,16 @@
-export { setConfig as default, config, defaultConfig } from "./utils/config";
+export {
+  payloadAssist as default,
+  payloadAssist,
+  payloadAssistConfig as config,
+  defaultConfig,
+} from "./utils/payloadAssist";
 export { Dto } from "./types/Dto";
 export { withDtoReadHook } from "./utils/withDtoReadHook";
 export { withResponse } from "./utils/withResponse";
-export { withConfigRules } from "./utils/withConfigRules";
 export { transformAndValidate } from "./utils/transformAndValidate";
 
-export type { PayloadAssistConfig } from "./types/PayloadAssistConfig";
+export { Expose, Type } from "class-transformer";
+
+export type { PayloadAssistConfig, PayloadAssistOptions } from "./types/config";
 export type { RuleSet } from "./types/RuleSet";
 
-export { Expose, Type } from "class-transformer";

@@ -1,6 +1,6 @@
 import type { CollectionAfterReadHook } from "payload";
 import { Dto } from "../types/Dto";
-import { config as payloadAssistConfig } from "./config";
+import { payloadAssistConfig as payloadAssistConfig } from "./payloadAssist";
 
 /**
  * Dtos is an array of objects with the following properties:
@@ -39,11 +39,14 @@ type afterReadHook = CollectionAfterReadHook & {
  */
 export const withDtoReadHook = (dtos: Dtos) => {
   const afterReadHook: afterReadHook = async (args) => {
+    if (!payloadAssistConfig) throw `PayloadAssist is not initialized. Use payloadAssist() to initialize it.`;
+
     const { doc, req } = args;
     if (req.payloadAPI === "local") return doc; // requests from local payload api don't require DTOs
 
     const dtoToApply = dtos.find((rule) => rule.condition?.(args) ?? true);
-    if (dtoToApply) return payloadAssistConfig.transformAndValidate(dtoToApply.dto, doc);
+    if (dtoToApply)
+      return payloadAssistConfig.transformAndValidate(dtoToApply.dto, doc);
 
     return null;
   };

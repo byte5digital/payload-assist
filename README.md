@@ -15,53 +15,45 @@ yarn add payload-assist
 npm install payload-assist
 ```
 
-Peer deps: Payload v3+, Next v15+, plus `class-transformer` and `reflect-metadata` (installed by the package).
+Peer deps: Payload v3+, Next v15+. Dependencies `class-transformer` and `reflect-metadata` are included in the package.
 
 
 ## API overview
 
-- `setConfig(config)`: Configures payload-assist rules and the transformAndValidate function that run against your payload config.
-- `defaultConfig`: Default config (can be spread/overridden).
-- `withConfigRules(payloadConfig)`: Wraps your payload config to ensure it matches the defined rules.
+- `payloadAssist(payloadConfig, options?)`: Main function that initializes payload-assist, validates your payload config against defined rules, and returns the built config.
+- `defaultConfig`: Default config with built-in rules and transformAndValidate function (can be spread/overridden).
 - `Dto`: Base abstract class for response DTOs.
-- `transformAndValidate(Dto, data)`: Validate Payload data and transform to DTO. The underlying transformer/validator can be overridden via config.
+- `transformAndValidate(Dto, data)`: Validate Payload data and transform to DTO. Uses the configured transformer/validator.
 - `withResponse(handler)`: Enforce DTO-only JSON responses in your custom payload endpoints.
-- `withDtoReadHook([{ dto, select }, { dto }])`: Attach to collections to return DTOs from read operations.
+- `withDtoReadHook([{ dto, condition }, { dto }])`: Attach to collections to return DTOs from read operations with conditional DTO selection.
 
 ## Usage
 
-### Set config
+### Initialize payload-assist
 
-The `ruleSet` and `transformAndValidate` can be configured by the config.
+The main `payloadAssist` function initializes the library, validates your payload config against defined rules, and returns the built config. You can customize the `ruleSet` and `transformAndValidate` function through options.
 
-- **ruleSet**: An object map of named rules; merge defaults with your own, if required Deactivate a default rule by setting the rule to `false`.
+- **ruleSet**: An object map of named rules; merge defaults with your own, if required. Deactivate a default rule by setting the rule to `false`.
 - **rules**: `(config: payloadConfig) => boolean | void`; throw to fail with an actionable message and return true if the rule is satisfied.
-- **transformAndValidate**: `(dto: Dto, data: unknown) => Dto | Promise<Dto>` Turn raw Payload data into typed DTOs. .
+- **transformAndValidate**: `(dto: Dto, data: unknown) => Dto` Turn raw Payload data into typed DTOs.
+
+**Built-in rules:**
+- `disableQraphQL`: Ensures GraphQL is disabled in your config
+- `collectionsEndpointsUseWithResponse`: Ensures all collection endpoints use `withResponse`
+- `collectionsUseWithDtoReadHook`: Ensures all collections use `withDtoReadHook` in their afterRead hooks
 
 ```ts
-import setconfig, { defaultConfig } from "payload-assist";
+import payloadAssist, { defaultConfig } from "payload-assist";
 
-setConfig({
+export default payloadAssist({
+  // your Payload config
+}, {
   ruleSet: {
     ...defaultConfig.ruleSet,
 
     // add/override rules here
-     secretIsSet: (config) => config.secret?.length > 0 ? true : throw 'A secret needs to be set',
+    secretIsSet: (config) => config.secret?.length > 0 ? true : throw 'A secret needs to be set',
   },
-});
-```
-
----
-
-### withConfigRules
-
-Checks your payload config for unmatched rules and calls payload's `buildConfig`. Throws an error if rules are not met.
-
-```ts
-import { withConfigRules } from "payload-assist";
-
-export default withConfigRules({
-  // your Payload config
 });
 ```
 
@@ -94,7 +86,7 @@ export class MyCollectionDto extends Dto {
 
 ---
 
-Transform any raw Payload doc into a DTO. By default `transformAndValidate` uses `class-transformer`, but it can be configured.
+Transform any raw Payload doc into a DTO. By default `transformAndValidate` uses `class-transformer`, but it can be configured through the payloadAssist options.
 
 ```ts
 import { transformAndValidate } from "payload-assist";

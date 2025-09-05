@@ -1,5 +1,5 @@
-import { withResponse } from "./utils/withResponse";
-import { withDtoReadHook } from "./utils/withDtoReadHook";
+import { withResponse } from "./utils/with-response";
+import { withDtoReadHook } from "./utils/with-dto-read-hook";
 import { plainToInstance } from "class-transformer";
 import "reflect-metadata";
 import { PayloadAssistConfig } from "./types/config";

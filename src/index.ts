@@ -3,11 +3,11 @@ export {
   payloadAssist,
   payloadAssistConfig as config,
   defaultConfig,
-} from "./utils/payloadAssist";
+} from "./utils/payload-assist";
 export { Dto } from "./types/Dto";
-export { withDtoReadHook } from "./utils/withDtoReadHook";
-export { withResponse } from "./utils/withResponse";
-export { transformAndValidate } from "./utils/transformAndValidate";
+export { withDtoReadHook } from "./utils/with-dto-read-hook";
+export { withResponse } from "./utils/with-response";
+export { transformAndValidate } from "./utils/transform-and-validate";
 
 export { Expose, Type } from "class-transformer";
 

@@ -1,6 +1,6 @@
 import type { CollectionAfterReadHook } from "payload";
 import { Dto } from "../types/Dto";
-import { payloadAssistConfig as payloadAssistConfig } from "./payloadAssist";
+import { payloadAssistConfig as payloadAssistConfig } from "./payload-assist";
 
 /**
  * Dtos is an array of objects with the following properties:

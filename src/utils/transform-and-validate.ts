@@ -1,4 +1,4 @@
-import { Dto } from "../types/Dto";
+import { Dto } from "../types/dto";
 import { payloadAssistConfig as payloadAssistConfig } from "./payload-assist";
 
 export const transformAndValidate = (dto: new () => Dto, data: unknown) => {

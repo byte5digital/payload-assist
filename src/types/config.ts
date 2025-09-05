@@ -1,5 +1,5 @@
-import type { Dto } from "./Dto";
-import type { RuleSet } from "./RuleSet";
+import type { Dto } from "./dto";
+import type { RuleSet } from "./rule-set";
 
 export type PayloadAssistConfig = {
   ruleSet: RuleSet;

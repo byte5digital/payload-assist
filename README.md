@@ -27,6 +27,28 @@ Peer deps: Payload v3+, Next v15+. Dependencies `class-transformer` and `reflect
 - `withResponse(handler)`: Enforce DTO-only JSON responses in your custom payload endpoints.
 - `withDtoReadHook([{ dto, condition }, { dto }])`: Attach to collections to return DTOs from read operations with conditional DTO selection.
 
+## Helper Types
+
+### AccessControl
+
+A comprehensive type for Payload collection access control that includes all available access control methods.
+
+```ts
+import { AccessControl } from "payload-assist";
+
+export const MyCollection: CollectionConfig = {
+  slug: "my-collection",
+  access: {
+    admin: ({ req }) => req.user?.role === "admin",
+    create: ({ req }) => req.user?.role === "admin",
+    read: ({ req }) => true, // public read
+    update: ({ req }) => req.user?.role === "admin",
+    delete: ({ req }) => req.user?.role === "admin",
+  } satisfies AccessControl,
+  // ...fields
+};
+```
+
 ## Usage
 
 ### Initialize payload-assist

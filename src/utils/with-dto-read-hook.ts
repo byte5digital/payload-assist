@@ -1,5 +1,5 @@
 import type { CollectionAfterReadHook } from "payload";
-import { Dto } from "../types/Dto";
+import { Dto } from "../types/dto";
 import { payloadAssistConfig as payloadAssistConfig } from "./payload-assist";
 
 /**

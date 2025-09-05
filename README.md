@@ -76,19 +76,19 @@ It is important that all DTOs extend the `Dto` class. The example below shows th
 import { Dto, Expose, Type } from "payload-assist";
 
 export class MediaResponse extends Dto {
-  @Expose() url!: string;
-  @Expose() mimeType!: string;
+  @Expose() url: string;
+  @Expose() mimeType: string;
 }
 
 export class UserResponse extends Dto {
-  @Expose() id!: number;
-  @Expose() name!: string;
+  @Expose() id: number;
+  @Expose() name: string;
 }
 
 export class MyCollectionDto extends Dto {
-  @Expose() name!: string;
-  @Expose() @Type(() => MediaResponse) image!: MediaResponse;
-  @Expose() @Type(() => UserResponse) owner!: UserResponse;
+  @Expose() name: string;
+  @Expose() @Type(() => MediaResponse) image: MediaResponse;
+  @Expose() @Type(() => UserResponse) owner: UserResponse;
 }
 ```
 
@@ -99,7 +99,7 @@ Transform any raw Payload doc into a DTO. By default `transformAndValidate` uses
 ```ts
 import { transformAndValidate } from "payload-assist";
 
-const payloadDoc = await ...
+const payloadDoc = await getPayloadDoc()
 const dto = transformAndValidate(MyCollectionDto, payloadDoc);
 ```
 
@@ -162,7 +162,7 @@ export const MyCollection: CollectionConfig = {
         {
           dto: MyCollectionAdminDto,
           condition: ({ req: { user } }) => user?.role === "admin",
-        }
+        },
         {
           dto: MyCollectionDto,
         }

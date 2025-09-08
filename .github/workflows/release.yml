@@ -50,7 +50,7 @@ jobs:
             COMMITS=$(git log --oneline --pretty=format:"%s")
             echo "No tags found, using all commits for first release"
           fi
-          
+
           echo "Raw commits found:"
           echo "$COMMITS"
           

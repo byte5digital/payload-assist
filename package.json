@@ -1,0 +1,61 @@
+{
+  "name": "@byte5digital/payload-assist",
+  "version": "0.2.0",
+  "description": "A TypeScript library providing DTO utilities and validation hooks for Payload CMS",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build",
+    "prepack": "npm run build",
+    "version:patch": "npm version patch --no-git-tag-version",
+    "version:minor": "npm version minor --no-git-tag-version",
+    "version:major": "npm version major --no-git-tag-version",
+    "changelog": "git log --oneline --pretty=format:'- %s (%h)' --grep='^feat\\|^fix\\|^docs\\|^style\\|^refactor\\|^perf\\|^test\\|^chore\\|^ci\\|^build\\|^revert'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:byte5digital/payload-assist.git"
+  },
+  "keywords": [
+    "payload",
+    "cms",
+    "dto",
+    "typescript",
+    "validation",
+    "config"
+  ],
+  "author": "byte5",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "peerDependencies": {
+    "next": "^15.0.0",
+    "payload": "^3.0.0"
+  },
+  "dependencies": {
+    "class-transformer": "^0.5.1",
+    "reflect-metadata": "^0.2.2"
+  },
+  "devDependencies": {
+    "next": "^15.0.0",
+    "payload": "^3.0.0",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

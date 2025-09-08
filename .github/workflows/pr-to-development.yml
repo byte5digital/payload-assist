@@ -1,0 +1,61 @@
+name: Pull Request to Development
+
+on:
+  pull_request:
+    branches: [development]
+    types: [opened, synchronize, reopened]
+
+jobs:
+  validate-pr:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Validate branch name format
+        run: |
+          BRANCH_NAME="${{ github.head_ref }}"
+          if [[ ! $BRANCH_NAME =~ ^(task|bug|sub-task)/[^/]+/.+ ]]; then
+            echo "❌ Branch name does not follow the required format: type/ticket/summary"
+            echo "Current branch: $BRANCH_NAME"
+            echo "Expected format: type/ticket/summary"
+            echo "Valid types: task, bug, sub-task"
+            echo "Examples:"
+            echo "  task/PA-123/add-new-validation-hook"
+            echo "  bug/PA-456/resolve-type-error-in-dto"
+            echo "  sub-task/PA-789/update-readme"
+            exit 1
+          else
+            echo "✅ Branch name follows the required format"
+          fi
+
+      - name: Run TypeScript compilation
+        run: yarn build
+
+      - name: Check for build errors
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "❌ Build failed - dist directory not created"
+            exit 1
+          fi
+          echo "✅ Build completed successfully"
+
+      - name: Show commits (for reference)
+        run: |
+          # Get commits in this PR for reference
+          COMMITS=$(git log --oneline origin/development..HEAD)
+          echo "Commits in this PR (will be squashed on merge):"
+          echo "$COMMITS"
+          echo "✅ Commits will be squashed, no validation needed"

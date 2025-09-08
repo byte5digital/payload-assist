@@ -1,6 +1,6 @@
 {
-  "name": "payload-assist",
-  "version": "0.1.1",
+  "name": "@byte5digital/payload-assist",
+  "version": "0.1.2",
   "description": "A TypeScript library providing DTO utilities and validation hooks for Payload CMS",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -15,7 +15,11 @@
     "build:watch": "tsc --watch",
     "clean": "rm -rf dist",
     "prepublishOnly": "npm run clean && npm run build",
-    "prepack": "npm run build"
+    "prepack": "npm run build",
+    "version:patch": "npm version patch --no-git-tag-version",
+    "version:minor": "npm version minor --no-git-tag-version",
+    "version:major": "npm version major --no-git-tag-version",
+    "changelog": "git log --merges --oneline --pretty=format:'- %s' | grep 'Merge pull request'"
   },
   "repository": {
     "type": "git",
@@ -52,6 +56,6 @@
     "typescript": "^5.7.3"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   }
 }

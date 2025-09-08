@@ -139,11 +139,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    #   - name: Publish to npm
-    #     if: steps.version_bump.outputs.bump_type != 'none'
-    #     run: |
-    #       echo "Publishing to npm..."
-    #       # Note: You'll need to add NPM_TOKEN to secrets for this to work
-    #       # echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-    #       # npm publish
-    #       echo "Skipping npm publish (requires NPM_TOKEN secret)"
+      - name: Publish to npm
+        if: steps.version_bump.outputs.bump_type != 'none'
+        run: |
+          echo "Publishing to npm..."
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+          npm publish --access public
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

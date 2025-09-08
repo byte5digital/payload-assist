@@ -40,14 +40,19 @@ jobs:
       - name: Analyze conventional commits and determine version bump
         id: version_bump
         run: |
-          # Get commits since last tag or from development branch
+          # Get commits since last tag or all commits if no tags exist
           if git tag --sort=-version:refname | head -1 > /dev/null 2>&1; then
             LAST_TAG=$(git tag --sort=-version:refname | head -1)
             COMMITS=$(git log --oneline $LAST_TAG..HEAD --pretty=format:"%s")
+            echo "Using commits since last tag: $LAST_TAG"
           else
-            # If no tags exist, get commits from development branch
-            COMMITS=$(git log --oneline origin/development..HEAD --pretty=format:"%s")
+            # If no tags exist, get all commits (first release)
+            COMMITS=$(git log --oneline --pretty=format:"%s")
+            echo "No tags found, using all commits for first release"
           fi
+          
+          echo "Raw commits found:"
+          echo "$COMMITS"
           
           echo "Analyzing conventional commits:"
           echo "$COMMITS"
@@ -56,6 +61,11 @@ jobs:
           FEAT_COUNT=$(echo "$COMMITS" | grep -c "^feat" || true)
           # Check for fix commits (patch bump)
           FIX_COUNT=$(echo "$COMMITS" | grep -c "^fix" || true)
+          
+          echo "All commits being analyzed:"
+          echo "$COMMITS"
+          echo "feat count: $FEAT_COUNT"
+          echo "fix count: $FIX_COUNT"
           
           echo "feat commits: $FEAT_COUNT"
           echo "fix commits: $FIX_COUNT"
@@ -86,12 +96,12 @@ jobs:
       - name: Generate changelog
         id: changelog
         run: |
-          # Get commits since last tag or from development branch
+          # Get commits since last tag or all commits if no tags exist
           if git tag --sort=-version:refname | head -1 > /dev/null 2>&1; then
             LAST_TAG=$(git tag --sort=-version:refname | head -1)
             COMMITS=$(git log $LAST_TAG..HEAD --pretty=format:"- %s (%h)" --grep="^feat\|^fix\|^docs\|^style\|^refactor\|^perf\|^test\|^chore\|^ci\|^build\|^revert")
           else
-            COMMITS=$(git log origin/development..HEAD --pretty=format:"- %s (%h)" --grep="^feat\|^fix\|^docs\|^style\|^refactor\|^perf\|^test\|^chore\|^ci\|^build\|^revert")
+            COMMITS=$(git log --pretty=format:"- %s (%h)" --grep="^feat\|^fix\|^docs\|^style\|^refactor\|^perf\|^test\|^chore\|^ci\|^build\|^revert")
           fi
           
           # Generate changelog header

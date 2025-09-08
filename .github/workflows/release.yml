@@ -37,41 +37,38 @@ jobs:
           echo "prev_version=$PREV_VERSION" >> $GITHUB_OUTPUT
           echo "Previous version: $PREV_VERSION"
 
-      - name: Analyze merged PRs and determine version bump
+      - name: Analyze conventional commits and determine version bump
         id: version_bump
         run: |
-          # Get merged PRs since last tag or from development branch
+          # Get commits since last tag or from development branch
           if git tag --sort=-version:refname | head -1 > /dev/null 2>&1; then
             LAST_TAG=$(git tag --sort=-version:refname | head -1)
-            MERGED_PR_BRANCHES=$(git log --merges --oneline $LAST_TAG..HEAD --pretty=format:"%s" | grep -o "from [^)]*" | sed 's/from //' | grep -E "^(task|bug|sub-task)/")
+            COMMITS=$(git log --oneline $LAST_TAG..HEAD --pretty=format:"%s")
           else
-            # If no tags exist, get merged PRs from development branch
-            MERGED_PR_BRANCHES=$(git log --merges --oneline origin/development..HEAD --pretty=format:"%s" | grep -o "from [^)]*" | sed 's/from //' | grep -E "^(task|bug|sub-task)/")
+            # If no tags exist, get commits from development branch
+            COMMITS=$(git log --oneline origin/development..HEAD --pretty=format:"%s")
           fi
           
-          echo "Analyzing merged PR branches:"
-          echo "$MERGED_PR_BRANCHES"
+          echo "Analyzing conventional commits:"
+          echo "$COMMITS"
           
-          # Check for task branches (minor bump)
-          TASK_COUNT=$(echo "$MERGED_PR_BRANCHES" | grep -c "^task/" || true)
-          # Check for bug branches (patch bump)
-          BUG_COUNT=$(echo "$MERGED_PR_BRANCHES" | grep -c "^bug/" || true)
-          # Check for sub-task branches (minor bump)
-          SUBTASK_COUNT=$(echo "$MERGED_PR_BRANCHES" | grep -c "^sub-task/" || true)
+          # Check for feat commits (minor bump)
+          FEAT_COUNT=$(echo "$COMMITS" | grep -c "^feat" || true)
+          # Check for fix commits (patch bump)
+          FIX_COUNT=$(echo "$COMMITS" | grep -c "^fix" || true)
           
-          echo "Task branches: $TASK_COUNT"
-          echo "Bug branches: $BUG_COUNT"
-          echo "Sub-task branches: $SUBTASK_COUNT"
+          echo "feat commits: $FEAT_COUNT"
+          echo "fix commits: $FIX_COUNT"
           
-          if [ "$TASK_COUNT" -gt 0 ] || [ "$SUBTASK_COUNT" -gt 0 ]; then
+          if [ "$FEAT_COUNT" -gt 0 ]; then
             echo "bump_type=minor" >> $GITHUB_OUTPUT
-            echo "Version bump: minor (task or sub-task branches found)"
-          elif [ "$BUG_COUNT" -gt 0 ]; then
+            echo "Version bump: minor (feat commits found)"
+          elif [ "$FIX_COUNT" -gt 0 ]; then
             echo "bump_type=patch" >> $GITHUB_OUTPUT
-            echo "Version bump: patch (bug branches found)"
+            echo "Version bump: patch (fix commits found)"
           else
             echo "bump_type=none" >> $GITHUB_OUTPUT
-            echo "No version bump needed (no task/bug/sub-task branches)"
+            echo "No version bump needed (no feat/fix commits)"
           fi
 
       - name: Bump version
@@ -89,33 +86,12 @@ jobs:
       - name: Generate changelog
         id: changelog
         run: |
-          # Get merged PRs for changelog
+          # Get commits since last tag or from development branch
           if git tag --sort=-version:refname | head -1 > /dev/null 2>&1; then
             LAST_TAG=$(git tag --sort=-version:refname | head -1)
-            MERGED_PRS=$(git log --merges --oneline $LAST_TAG..HEAD --pretty=format:"%s" | grep -E "Merge pull request")
+            COMMITS=$(git log $LAST_TAG..HEAD --pretty=format:"- %s (%h)" --grep="^feat\|^fix\|^docs\|^style\|^refactor\|^perf\|^test\|^chore\|^ci\|^build\|^revert")
           else
-            MERGED_PRS=$(git log --merges --oneline origin/development..HEAD --pretty=format:"%s" | grep -E "Merge pull request")
-          fi
-          
-          # Extract PR numbers and create changelog entries
-          CHANGELOG_ENTRIES=""
-          if [ -n "$MERGED_PRS" ]; then
-            while IFS= read -r merge_commit; do
-              # Extract PR number from merge commit message
-              PR_NUMBER=$(echo "$merge_commit" | grep -o "#[0-9]*" | sed 's/#//')
-              if [ -n "$PR_NUMBER" ]; then
-                # Get PR title from GitHub API
-                PR_TITLE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-                  "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER" | \
-                  jq -r '.title // "Unknown PR"')
-                
-                # Extract branch name from merge commit
-                BRANCH_NAME=$(echo "$merge_commit" | grep -o "from [^)]*" | sed 's/from //')
-                
-                # Format changelog entry
-                CHANGELOG_ENTRIES="${CHANGELOG_ENTRIES}- $PR_TITLE ([#$PR_NUMBER](https://github.com/${{ github.repository }}/pull/$PR_NUMBER)) (from \`$BRANCH_NAME\`)\n"
-              fi
-            done <<< "$MERGED_PRS"
+            COMMITS=$(git log origin/development..HEAD --pretty=format:"- %s (%h)" --grep="^feat\|^fix\|^docs\|^style\|^refactor\|^perf\|^test\|^chore\|^ci\|^build\|^revert")
           fi
           
           # Generate changelog header
@@ -123,7 +99,7 @@ jobs:
           CHANGELOG_FOOTER="**Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ steps.prev_version.outputs.prev_version }}...${{ steps.bump_version.outputs.new_version || steps.prev_version.outputs.prev_version }}"
           
           # Combine all parts
-          CHANGELOG="${CHANGELOG_HEADER}\n\n${CHANGELOG_ENTRIES}\n\n${CHANGELOG_FOOTER}"
+          CHANGELOG="${CHANGELOG_HEADER}\n\n${COMMITS}\n\n${CHANGELOG_FOOTER}"
           
           echo "changelog<<EOF" >> $GITHUB_OUTPUT
           echo -e "$CHANGELOG" >> $GITHUB_OUTPUT

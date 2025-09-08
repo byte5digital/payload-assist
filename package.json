@@ -1,6 +1,6 @@
 {
   "name": "@byte5digital/payload-assist",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A TypeScript library providing DTO utilities and validation hooks for Payload CMS",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -21,7 +21,6 @@
     "version:major": "npm version major --no-git-tag-version",
     "changelog": "git log --oneline --pretty=format:'- %s (%h)' --grep='^feat\\|^fix\\|^docs\\|^style\\|^refactor\\|^perf\\|^test\\|^chore\\|^ci\\|^build\\|^revert'"
   },
-  
   "repository": {
     "type": "git",
     "url": "git@github.com:byte5digital/payload-assist.git"

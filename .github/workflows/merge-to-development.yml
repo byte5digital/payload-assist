@@ -1,0 +1,61 @@
+name: Merge to Development
+
+on:
+  pull_request:
+    branches: [development]
+    types: [closed]
+
+jobs:
+  merge-validation:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Validate merged branch name
+        run: |
+          # Get the merge commit message to extract branch name
+          MERGE_COMMIT_MSG=$(git log -1 --pretty=format:"%s")
+          echo "Merge commit message: $MERGE_COMMIT_MSG"
+          
+          # Extract branch name from merge commit
+          BRANCH_NAME=$(echo "$MERGE_COMMIT_MSG" | grep -o "from [^)]*" | sed 's/from //')
+          echo "Merged branch: $BRANCH_NAME"
+          
+          # Check if branch follows the pattern: type/ticket/summary
+          if [[ ! $BRANCH_NAME =~ ^(task|bug|sub-task)/[^/]+/.+ ]]; then
+            echo "❌ Merged branch does not follow the required format: type/ticket/summary"
+            echo "Current branch: $BRANCH_NAME"
+            echo "Expected format: type/ticket/summary"
+            echo "Valid types: task, bug, sub-task"
+            echo "Examples:"
+            echo "  task/PA-123/add-new-validation-hook"
+            echo "  bug/PA-456/resolve-type-error-in-dto"
+            echo "  sub-task/PA-789/update-readme"
+            exit 1
+          else
+            echo "✅ Merged branch follows the required format"
+          fi
+
+      - name: Run final build test
+        run: |
+          yarn build
+          echo "✅ Build completed successfully after merge"
+
+      - name: Notify successful merge
+        run: |
+          echo "✅ PR successfully merged to development branch"
+          echo "The changes will be included in the next release when development is merged to master"

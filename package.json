@@ -21,6 +21,7 @@
     "version:major": "npm version major --no-git-tag-version",
     "changelog": "git log --oneline --pretty=format:'- %s (%h)' --grep='^feat\\|^fix\\|^docs\\|^style\\|^refactor\\|^perf\\|^test\\|^chore\\|^ci\\|^build\\|^revert'"
   },
+  
   "repository": {
     "type": "git",
     "url": "git@github.com:byte5digital/payload-assist.git"

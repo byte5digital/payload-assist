@@ -1,0 +1,172 @@
+name: Release
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Get previous version
+        id: prev_version
+        run: |
+          PREV_VERSION=$(node -p "require('./package.json').version")
+          echo "prev_version=$PREV_VERSION" >> $GITHUB_OUTPUT
+          echo "Previous version: $PREV_VERSION"
+
+      - name: Analyze merged PRs and determine version bump
+        id: version_bump
+        run: |
+          # Get merged PRs since last tag or from development branch
+          if git tag --sort=-version:refname | head -1 > /dev/null 2>&1; then
+            LAST_TAG=$(git tag --sort=-version:refname | head -1)
+            MERGED_PR_BRANCHES=$(git log --merges --oneline $LAST_TAG..HEAD --pretty=format:"%s" | grep -o "from [^)]*" | sed 's/from //' | grep -E "^(task|bug|sub-task)/")
+          else
+            # If no tags exist, get merged PRs from development branch
+            MERGED_PR_BRANCHES=$(git log --merges --oneline origin/development..HEAD --pretty=format:"%s" | grep -o "from [^)]*" | sed 's/from //' | grep -E "^(task|bug|sub-task)/")
+          fi
+          
+          echo "Analyzing merged PR branches:"
+          echo "$MERGED_PR_BRANCHES"
+          
+          # Check for task branches (minor bump)
+          TASK_COUNT=$(echo "$MERGED_PR_BRANCHES" | grep -c "^task/" || true)
+          # Check for bug branches (patch bump)
+          BUG_COUNT=$(echo "$MERGED_PR_BRANCHES" | grep -c "^bug/" || true)
+          # Check for sub-task branches (minor bump)
+          SUBTASK_COUNT=$(echo "$MERGED_PR_BRANCHES" | grep -c "^sub-task/" || true)
+          
+          echo "Task branches: $TASK_COUNT"
+          echo "Bug branches: $BUG_COUNT"
+          echo "Sub-task branches: $SUBTASK_COUNT"
+          
+          if [ "$TASK_COUNT" -gt 0 ] || [ "$SUBTASK_COUNT" -gt 0 ]; then
+            echo "bump_type=minor" >> $GITHUB_OUTPUT
+            echo "Version bump: minor (task or sub-task branches found)"
+          elif [ "$BUG_COUNT" -gt 0 ]; then
+            echo "bump_type=patch" >> $GITHUB_OUTPUT
+            echo "Version bump: patch (bug branches found)"
+          else
+            echo "bump_type=none" >> $GITHUB_OUTPUT
+            echo "No version bump needed (no task/bug/sub-task branches)"
+          fi
+
+      - name: Bump version
+        id: bump_version
+        if: steps.version_bump.outputs.bump_type != 'none'
+        run: |
+          BUMP_TYPE="${{ steps.version_bump.outputs.bump_type }}"
+          echo "Bumping $BUMP_TYPE version..."
+          
+          # Bump version using npm version
+          NEW_VERSION=$(npm version $BUMP_TYPE --no-git-tag-version)
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "New version: $NEW_VERSION"
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # Get merged PRs for changelog
+          if git tag --sort=-version:refname | head -1 > /dev/null 2>&1; then
+            LAST_TAG=$(git tag --sort=-version:refname | head -1)
+            MERGED_PRS=$(git log --merges --oneline $LAST_TAG..HEAD --pretty=format:"%s" | grep -E "Merge pull request")
+          else
+            MERGED_PRS=$(git log --merges --oneline origin/development..HEAD --pretty=format:"%s" | grep -E "Merge pull request")
+          fi
+          
+          # Extract PR numbers and create changelog entries
+          CHANGELOG_ENTRIES=""
+          if [ -n "$MERGED_PRS" ]; then
+            while IFS= read -r merge_commit; do
+              # Extract PR number from merge commit message
+              PR_NUMBER=$(echo "$merge_commit" | grep -o "#[0-9]*" | sed 's/#//')
+              if [ -n "$PR_NUMBER" ]; then
+                # Get PR title from GitHub API
+                PR_TITLE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                  "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER" | \
+                  jq -r '.title // "Unknown PR"')
+                
+                # Extract branch name from merge commit
+                BRANCH_NAME=$(echo "$merge_commit" | grep -o "from [^)]*" | sed 's/from //')
+                
+                # Format changelog entry
+                CHANGELOG_ENTRIES="${CHANGELOG_ENTRIES}- $PR_TITLE ([#$PR_NUMBER](https://github.com/${{ github.repository }}/pull/$PR_NUMBER)) (from \`$BRANCH_NAME\`)\n"
+              fi
+            done <<< "$MERGED_PRS"
+          fi
+          
+          # Generate changelog header
+          CHANGELOG_HEADER="## Changes in ${{ steps.bump_version.outputs.new_version || steps.prev_version.outputs.prev_version }}"
+          CHANGELOG_FOOTER="**Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ steps.prev_version.outputs.prev_version }}...${{ steps.bump_version.outputs.new_version || steps.prev_version.outputs.prev_version }}"
+          
+          # Combine all parts
+          CHANGELOG="${CHANGELOG_HEADER}\n\n${CHANGELOG_ENTRIES}\n\n${CHANGELOG_FOOTER}"
+          
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo -e "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          echo "Generated changelog:"
+          echo -e "$CHANGELOG"
+
+      - name: Build project
+        run: |
+          yarn build
+          echo "Build completed successfully"
+
+      - name: Commit version bump
+        if: steps.version_bump.outputs.bump_type != 'none'
+        run: |
+          git add package.json
+          git commit -m "chore: bump version to ${{ steps.bump_version.outputs.new_version }}"
+          git push origin master
+
+      - name: Create Git tag
+        if: steps.version_bump.outputs.bump_type != 'none'
+        run: |
+          git tag -a "${{ steps.bump_version.outputs.new_version }}" -m "Release ${{ steps.bump_version.outputs.new_version }}"
+          git push origin "${{ steps.bump_version.outputs.new_version }}"
+
+      - name: Create GitHub Release
+        if: steps.version_bump.outputs.bump_type != 'none'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.bump_version.outputs.new_version }}
+          release_name: Release ${{ steps.bump_version.outputs.new_version }}
+          body: ${{ steps.changelog.outputs.changelog }}
+          draft: false
+          prerelease: false
+
+    #   - name: Publish to npm
+    #     if: steps.version_bump.outputs.bump_type != 'none'
+    #     run: |
+    #       echo "Publishing to npm..."
+    #       # Note: You'll need to add NPM_TOKEN to secrets for this to work
+    #       # echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+    #       # npm publish
+    #       echo "Skipping npm publish (requires NPM_TOKEN secret)"

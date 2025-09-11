@@ -3,6 +3,7 @@ import { withDtoReadHook } from "./utils/with-dto-read-hook";
 import { plainToInstance } from "class-transformer";
 import "reflect-metadata";
 import { PayloadAssistConfig } from "./types/config";
+import { PayloadRequest } from "payload";
 
 export default {
   ruleSet: {
@@ -63,4 +64,8 @@ export default {
       excludeExtraneousValues: true,
     });
   },
+  getUserRole: (req: PayloadRequest, role: string | number) => {
+    return req.user?.role === role;
+  },
+  adminUserRole: "admin",
 } as PayloadAssistConfig;

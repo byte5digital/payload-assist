@@ -30,7 +30,7 @@ export const withResponse = (
       ); // message response does not require a dto
 
     if (!(responseObject.response instanceof Dto))
-      throw new Error("Response is not an instance of Dto");
+      throw "Response is not an instance of Dto";
 
     return NextResponse.json<Dto>(responseObject.response, {
       status: responseObject.status ?? 200,

@@ -1,6 +1,6 @@
 {
   "name": "payload-assist",
-  "version": "0.1.1",
+  "version": "0.1.12",
   "description": "A TypeScript library providing DTO utilities and validation hooks for Payload CMS",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -15,7 +15,8 @@
     "build:watch": "tsc --watch",
     "clean": "rm -rf dist",
     "prepublishOnly": "npm run clean && npm run build",
-    "prepack": "npm run build"
+    "prepack": "npm run build",
+    "test": "vitest"
   },
   "repository": {
     "type": "git",
@@ -49,7 +50,9 @@
   "devDependencies": {
     "next": "^15.0.0",
     "payload": "^3.0.0",
-    "typescript": "^5.7.3"
+    "react": "^19.1.1",
+    "typescript": "^5.7.3",
+    "vitest": "^3.2.4"
   },
   "engines": {
     "node": ">=18.0.0"

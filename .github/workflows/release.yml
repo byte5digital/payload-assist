@@ -9,11 +9,18 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
     steps:
+      - name: Create GitHub App Token
+        uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ secrets.DEPLOYMENT_APP_ID }}
+          private-key: ${{ secrets.DEPLOYMENT_APP_SECRET }}
+
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -116,39 +123,6 @@ jobs:
         run: |
           yarn build
           echo "Build completed successfully"
-
-      - name: Create GitHub App Token
-        if: steps.version_bump.outputs.bump_type != 'none'
-        uses: actions/create-github-app-token@v1
-        id: app-token
-        with:
-          app-id: ${{ secrets.DEPLOYMENT_APP_ID }}
-          private-key: ${{ secrets.DEPLOYMENT_APP_SECRET }}
-
-      - name: Re-checkout with App Token
-        if: steps.version_bump.outputs.bump_type != 'none'
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ steps.app-token.outputs.token }}
-
-      - name: Debug App Token
-        if: steps.version_bump.outputs.bump_type != 'none'
-        run: |
-          echo "Testing app token authentication..."
-          echo "App ID: ${{ secrets.DEPLOYMENT_APP_ID }}"
-          echo "Token length: ${#GITHUB_TOKEN}"
-          echo "Testing repository access..."
-          curl -H "Authorization: token ${{ steps.app-token.outputs.token }}" \
-               -H "Accept: application/vnd.github.v3+json" \
-               https://api.github.com/repos/${{ github.repository }}
-          echo ""
-          echo "Testing installation permissions..."
-          curl -H "Authorization: token ${{ steps.app-token.outputs.token }}" \
-               -H "Accept: application/vnd.github.v3+json" \
-               https://api.github.com/installation/repositories
-        env:
-          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
       - name: Commit version bump
         if: steps.version_bump.outputs.bump_type != 'none'

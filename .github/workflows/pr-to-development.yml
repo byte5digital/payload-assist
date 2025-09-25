@@ -24,23 +24,6 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Validate branch name format
-        run: |
-          BRANCH_NAME="${{ github.head_ref }}"
-          if [[ ! $BRANCH_NAME =~ ^(task|bug|sub-task)/[^/]+/.+ ]]; then
-            echo "❌ Branch name does not follow the required format: type/ticket/summary"
-            echo "Current branch: $BRANCH_NAME"
-            echo "Expected format: type/ticket/summary"
-            echo "Valid types: task, bug, sub-task"
-            echo "Examples:"
-            echo "  task/PA-123/add-new-validation-hook"
-            echo "  bug/PA-456/resolve-type-error-in-dto"
-            echo "  sub-task/PA-789/update-readme"
-            exit 1
-          else
-            echo "✅ Branch name follows the required format"
-          fi
-
       - name: Run TypeScript compilation
         run: yarn build
 

@@ -131,15 +131,15 @@ jobs:
           echo "Testing app token authentication..."
           echo "App ID: ${{ secrets.DEPLOYMENT_APP_ID }}"
           echo "Token length: ${#GITHUB_TOKEN}"
-          echo "Testing with /user endpoint..."
+          echo "Testing repository access..."
           curl -H "Authorization: token ${{ steps.app-token.outputs.token }}" \
                -H "Accept: application/vnd.github.v3+json" \
-               https://api.github.com/user
+               https://api.github.com/repos/${{ github.repository }}
           echo ""
-          echo "Testing with /app endpoint..."
+          echo "Testing repository permissions..."
           curl -H "Authorization: token ${{ steps.app-token.outputs.token }}" \
                -H "Accept: application/vnd.github.v3+json" \
-               https://api.github.com/app
+               https://api.github.com/repos/${{ github.repository }}/collaborators
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 

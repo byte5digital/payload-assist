@@ -130,6 +130,8 @@ jobs:
         run: |
           git add package.json
           git commit -m "chore: bump version to ${{ steps.bump_version.outputs.new_version }}"
+          git config --local credential.helper store
+          echo "https://x-access-token:${{ steps.app-token.outputs.token }}@github.com" > ~/.git-credentials
           git push origin master
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
@@ -138,6 +140,8 @@ jobs:
         if: steps.version_bump.outputs.bump_type != 'none'
         run: |
           git tag -a "${{ steps.bump_version.outputs.new_version }}" -m "Release ${{ steps.bump_version.outputs.new_version }}"
+          git config --local credential.helper store
+          echo "https://x-access-token:${{ steps.app-token.outputs.token }}@github.com" > ~/.git-credentials
           git push origin "${{ steps.bump_version.outputs.new_version }}"
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}

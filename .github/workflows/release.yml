@@ -100,9 +100,9 @@ jobs:
           # Get commits since last tag (these are the commits that were merged from development to master)
           LAST_TAG=$(git tag --sort=-version:refname | head -1)
           if [ -n "$LAST_TAG" ]; then
-            COMMITS=$(git log $LAST_TAG..HEAD --pretty=format:"- %s (%h)" --grep="^feat\|^fix\|^docs\|^style\|^refactor\|^perf\|^test\|^chore\|^build\|^revert")
+            COMMITS=$(git log $LAST_TAG..HEAD --pretty=format:"- %s (%h)" --grep="^feat\|^fix\|^docs\|^style\|^refactor\|^perf\|^test\|^chore\|^build\|^revert" --no-merges)
           else
-            COMMITS=$(git log --pretty=format:"- %s (%h)" --grep="^feat\|^fix\|^docs\|^style\|^refactor\|^perf\|^test\|^chore\|^build\|^revert")
+            COMMITS=$(git log --pretty=format:"- %s (%h)" --grep="^feat\|^fix\|^docs\|^style\|^refactor\|^perf\|^test\|^chore\|^build\|^revert" --no-merges)
           fi
           
           # Generate changelog header

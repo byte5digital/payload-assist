@@ -1,3 +1,27 @@
+<picture>
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/byte5digital/payload-assist/blob/master/.github/assets/gh-banner-light.png?raw=true">
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/byte5digital/payload-assist/blob/master/.github/assets/gh-banner-dark.png?raw=true">
+  <img alt="Fallback image description" src="https://github.com/user-attachments/assets/1ef2819b-91c7-440b-9707-583a580c0703">
+</picture>
+
+<div align="center" style="display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 12px;">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fregistry.npmjs.org%2F@byte5digital%2Fpayload-assist&query=%24%5B%22dist-tags%22%5D.latest&prefix=v&label=NPM&style=for-the-badge&labelColor=ffffff&color=373E45">
+  <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fregistry.npmjs.org%2F@byte5digital%2Fpayload-assist&query=%24%5B%22dist-tags%22%5D.latest&prefix=v&label=NPM&style=for-the-badge&labelColor=002634&color=E5E9EB">
+  <img alt="Fallback image description" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fregistry.npmjs.org%2F@byte5digital%2Fpayload-assist&query=%24%5B%22dist-tags%22%5D.latest&prefix=v&label=NPM&style=for-the-badge&labelColor=ffffff&color=373E45">
+</picture>
+  <picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/TESTS-PASSING-empty?style=for-the-badge&labelColor=ffffff&color=373E45">
+  <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/badge/TESTS-PASSING-empty?style=for-the-badge&labelColor=002634&color=E5E9EB">
+  <img alt="Tests passing" src="https://img.shields.io/badge/TESTS-PASSING-empty?style=for-the-badge&labelColor=ffffff&color=373E45">
+</picture>
+  <picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/LICENSE-MIT-empty?style=for-the-badge&labelColor=ffffff&color=373E45">
+  <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/badge/LICENSE-MIT-empty?style=for-the-badge&labelColor=002634&color=E5E9EB">
+  <img alt="License MIT" src="https://img.shields.io/badge/LICENSE-MIT-empty?style=for-the-badge&labelColor=ffffff&color=373E45">
+</picture>
+</div>
+
 # payload-assist
 
 Utilities to add guardrails, DTO tooling, and ergonomic rules to Payload CMS projects.
@@ -5,7 +29,6 @@ Utilities to add guardrails, DTO tooling, and ergonomic rules to Payload CMS pro
 - **Rules**: Validate your Payload config at boot (e.g., kebab-case slugs).
 - **DTOs**: First-class helpers to define, transform, validate, and enforce DTO-only responses.
 - **Ergonomics**: Thin wrappers to keep endpoints and collection reads consistent and secure.
-
 
 ## Installation
 
@@ -16,7 +39,6 @@ npm install payload-assist
 ```
 
 Peer deps: Payload v3+, Next v15+. Dependencies `class-transformer` and `reflect-metadata` are included in the package.
-
 
 ## API overview
 
@@ -53,29 +75,35 @@ export const MyCollection: CollectionConfig = {
 
 ### Initialize payload-assist
 
-The main `payloadAssist` function initializes the library, validates your payload config against defined rules, and returns the built config. You can customize the `ruleSet` and `transformAndValidate` function through options.
+The main `payloadAssist` function initializes the library and validates your payload config against defined rules. You can customize the `ruleSet` and `transformAndValidate` function through options.
 
 - **ruleSet**: An object map of named rules; merge defaults with your own, if required. Deactivate a default rule by setting the rule to `false`.
 - **rules**: `(config: payloadConfig) => boolean | void`; throw to fail with an actionable message and return true if the rule is satisfied.
 - **transformAndValidate**: `(dto: Dto, data: unknown) => Dto` Turn raw Payload data into typed DTOs.
 
 **Built-in rules:**
+
 - `disableQraphQL`: Ensures GraphQL is disabled in your config
 - `collectionsEndpointsUseWithResponse`: Ensures all collection endpoints use `withResponse`
 - `collectionsUseWithDtoReadHook`: Ensures all collections use `withDtoReadHook` in their afterRead hooks
 
 ```ts
+import { buildConfig } from "payload";
 import payloadAssist, { defaultConfig } from "payload-assist";
 
-export default payloadAssist({
+export default buildConfig({
   // your Payload config
-}, {
-  ruleSet: {
-    ...defaultConfig.ruleSet,
-
-    // add/override rules here
-    secretIsSet: (config) => config.secret?.length > 0 ? true : throw 'A secret needs to be set',
-  },
+  plugins: [
+    payloadAssist(
+      {
+        ruleSet: {
+          ...defaultConfig.ruleSet,
+          // add/override rules here
+          secretIsSet: (config) => config.secret?.length > 0 ? true : throw 'A secret needs to be set',
+        },
+      }
+    ),
+  ]
 });
 ```
 
@@ -113,7 +141,7 @@ Transform any raw Payload doc into a DTO. By default `transformAndValidate` uses
 ```ts
 import { transformAndValidate } from "payload-assist";
 
-const payloadDoc = await getPayloadDoc()
+const payloadDoc = await getPayloadDoc();
 const dto = transformAndValidate(MyCollectionDto, payloadDoc);
 ```
 

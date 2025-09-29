@@ -1,0 +1,163 @@
+name: Pull Request to Master
+
+on:
+  pull_request:
+    branches: [master]
+    types: [opened, synchronize, reopened]
+
+jobs:
+  pr-preview:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.base.ref == 'master'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Get current version
+        id: current_version
+        run: |
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          echo "Current version: $CURRENT_VERSION"
+
+      - name: Analyze conventional commits and determine version bump
+        id: version_bump
+        run: |
+          # Get commits in this PR
+          COMMITS=$(git log --oneline ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} --pretty=format:"%s")
+          
+          echo "Analyzing conventional commits in this PR:"
+          echo "$COMMITS"
+          
+          # Check for feat commits (minor bump)
+          FEAT_COUNT=$(echo "$COMMITS" | grep -c "^feat" || true)
+          # Check for fix commits (patch bump)  
+          FIX_COUNT=$(echo "$COMMITS" | grep -c "^fix" || true)
+          
+          echo "feat count: $FEAT_COUNT"
+          echo "fix count: $FIX_COUNT"
+          
+          if [ "$FEAT_COUNT" -gt 0 ]; then
+            echo "bump_type=minor" >> $GITHUB_OUTPUT
+            echo "Version bump: minor (feat commits found)"
+          elif [ "$FIX_COUNT" -gt 0 ]; then
+            echo "bump_type=patch" >> $GITHUB_OUTPUT
+            echo "Version bump: patch (fix commits found)"
+          else
+            echo "bump_type=none" >> $GITHUB_OUTPUT
+            echo "No version bump needed (no feat/fix commits)"
+          fi
+
+      - name: Calculate new version
+        id: new_version
+        run: |
+          CURRENT_VERSION="${{ steps.current_version.outputs.current_version }}"
+          BUMP_TYPE="${{ steps.version_bump.outputs.bump_type }}"
+          
+          if [ "$BUMP_TYPE" = "none" ]; then
+            echo "new_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+            echo "No version change: $CURRENT_VERSION"
+          else
+            # Parse current version
+            IFS='.' read -r major minor patch <<< "$CURRENT_VERSION"
+            
+            if [ "$BUMP_TYPE" = "minor" ]; then
+              new_minor=$((minor + 1))
+              NEW_VERSION="$major.$new_minor.0"
+            elif [ "$BUMP_TYPE" = "patch" ]; then
+              new_patch=$((patch + 1))
+              NEW_VERSION="$major.$minor.$new_patch"
+            fi
+            
+            echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+            echo "New version: $NEW_VERSION"
+          fi
+
+      - name: Generate changelog preview
+        id: changelog
+        run: |
+          # Get commits in this PR
+          COMMITS=$(git log ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} --pretty=format:"- %s (%h)" --grep="^feat\|^fix\|^docs\|^style\|^refactor\|^perf\|^test\|^chore\|^build\|^revert" --no-merges)
+          
+          # Generate changelog header
+          CHANGELOG_HEADER="## Changes in ${{ steps.new_version.outputs.new_version }}"
+          CHANGELOG_FOOTER="**Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ steps.current_version.outputs.current_version }}...${{ steps.new_version.outputs.new_version }}"
+          
+          # Combine all parts
+          CHANGELOG="${CHANGELOG_HEADER}\n\n${COMMITS}\n\n${CHANGELOG_FOOTER}"
+          
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo -e "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          echo "Generated changelog preview:"
+          echo -e "$CHANGELOG"
+
+      - name: Create PR comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { version_bump, new_version, current_version, changelog } = ${{ toJson(steps) }};
+            
+            const bumpType = version_bump.outputs.bump_type;
+            const newVersion = new_version.outputs.new_version;
+            const currentVersion = current_version.outputs.current_version;
+            const changelogContent = changelog.outputs.changelog;
+            
+            let comment = `## 🚀 Release Preview\n\n`;
+            
+            if (bumpType === 'none') {
+              comment += `**No version bump required** - This PR doesn't contain any \`feat\` or \`fix\` commits.\n\n`;
+              comment += `Current version: \`${currentVersion}\`\n\n`;
+            } else {
+              comment += `**Version bump**: \`${currentVersion}\` → \`${newVersion}\` (\`${bumpType}\`)\n\n`;
+              comment += `### Changelog Preview\n\n`;
+              comment += changelogContent;
+            }
+            
+            comment += `\n---\n\n`;
+            comment += `*This preview is automatically generated based on conventional commits in this PR.*`;
+            
+            // Check if a comment already exists from this workflow
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const existingComment = comments.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('🚀 Release Preview')
+            );
+            
+            if (existingComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: comment
+              });
+              console.log('Updated existing release preview comment');
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: comment
+              });
+              console.log('Created new release preview comment');
+            }

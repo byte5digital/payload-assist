@@ -1,51 +1,6 @@
 import { beforeEach, describe, it, vi } from "vitest";
-import { Dto } from "../types/dto";
-import { withDtoReadHook } from "../utils/with-dto-read-hook";
-import { withResponse } from "../utils/with-response";
 import { NextResponse } from "next/server";
-
-class MyCollectionDto extends Dto {}
-
-const correctPayloadConfig = {
-  collections: [
-    {
-      slug: "test",
-      fields: [],
-      hooks: {
-        afterRead: [
-          withDtoReadHook([
-            {
-              dto: MyCollectionDto,
-            },
-          ]),
-        ],
-      },
-      access: {
-        read: () => true,
-        create: () => true,
-        update: () => true,
-        delete: () => true,
-      },
-      endpoints: [
-        {
-          path: "/test",
-          method: "get",
-          handler: withResponse(async () => ({
-            response: new MyCollectionDto(),
-            status: 200,
-          })),
-        },
-      ],
-    },
-  ],
-  db: {
-    init: vi.fn(),
-    defaultIDType: "number",
-  },
-  graphQL: {
-    disable: true,
-  },
-} as unknown as import("payload").Config;
+import correctPayloadConfig from "./utils/correctPayloadConfig";
 
 describe("config check", async () => {
   vi.mock("payload", async () => {
@@ -150,7 +105,7 @@ describe("config check", async () => {
     } as import("payload").Config;
 
     expect(() => payloadAssist(payloadConfig)).toThrow(
-      '[PayloadAssist Error]: collectionsEndpointsUseWithResponse: The collection "test" has an endpoint "/test" that does not use withResponse.'
+      '[PayloadAssist Error]: collectionsEndpointsUseWithResponse: The collection "test" has an endpoint "/some-endpoint" that does not use withResponse.'
     );
   });
 

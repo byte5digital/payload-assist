@@ -6,7 +6,9 @@ import { PayloadAssistConfig } from "./types/config";
 
 export default {
   ruleSet: {
-    disableQraphQL: (config) => config.graphQL?.disable === true,
+    disableQraphQL: (config) => {
+      if (config.graphQL?.disable !== true) throw `GraphQL is not disabled.`;
+    },
     collectionsEndpointsUseWithResponse: (config) =>
       config.collections?.every((collection) => {
         if (!collection.endpoints) return true;

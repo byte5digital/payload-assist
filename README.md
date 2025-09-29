@@ -1,14 +1,14 @@
 <picture>
-  <source media="(prefers-color-scheme: light)" srcset="https://github.com/byte5digital/payload-assist/blob/master/.github/assets/gh-banner-light.png?raw=true">
-  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/byte5digital/payload-assist/blob/master/.github/assets/gh-banner-dark.png?raw=true">
-  <img alt="Fallback image description" src="https://github.com/user-attachments/assets/1ef2819b-91c7-440b-9707-583a580c0703">
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/byte5digital/payload-assist/master/.github/assets/gh-banner-light.png">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/byte5digital/payload-assist/master/.github/assets/gh-banner-dark.png?raw=true">
+  <img alt="Assist for Payload" src="https://raw.githubusercontent.com/byte5digital/payload-assist/master/.github/assets/gh-banner-dark.png?raw=true">
 </picture>
 
 <div align="center" style="display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 12px;">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fregistry.npmjs.org%2F@byte5digital%2Fpayload-assist&query=%24%5B%22dist-tags%22%5D.latest&prefix=v&label=NPM&style=for-the-badge&labelColor=ffffff&color=373E45">
   <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fregistry.npmjs.org%2F@byte5digital%2Fpayload-assist&query=%24%5B%22dist-tags%22%5D.latest&prefix=v&label=NPM&style=for-the-badge&labelColor=002634&color=E5E9EB">
-  <img alt="Fallback image description" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fregistry.npmjs.org%2F@byte5digital%2Fpayload-assist&query=%24%5B%22dist-tags%22%5D.latest&prefix=v&label=NPM&style=for-the-badge&labelColor=ffffff&color=373E45">
+  <img alt="Assist for Payload" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fregistry.npmjs.org%2F@byte5digital%2Fpayload-assist&query=%24%5B%22dist-tags%22%5D.latest&prefix=v&label=NPM&style=for-the-badge&labelColor=ffffff&color=373E45">
 </picture>
   <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/TESTS-PASSING-empty?style=for-the-badge&labelColor=ffffff&color=373E45">

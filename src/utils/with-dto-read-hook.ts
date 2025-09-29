@@ -1,6 +1,7 @@
 import type { CollectionAfterReadHook } from "payload";
 import { Dto } from "../types/dto";
 import { payloadAssistConfig as payloadAssistConfig } from "./payload-assist";
+import PayloadAssistError from "../types/PayloadAssistError";
 
 /**
  * Dtos is an array of objects with the following properties:
@@ -39,7 +40,7 @@ type afterReadHook = CollectionAfterReadHook & {
  */
 export const withDtoReadHook = (dtos: Dtos) => {
   const afterReadHook: afterReadHook = async (args) => {
-    if (!payloadAssistConfig) throw `PayloadAssist is not initialized. Use payloadAssist() to initialize it.`;
+    if (!payloadAssistConfig) throw new PayloadAssistError(`PayloadAssist is not initialized. Use payloadAssist() to initialize it.`);
 
     const { doc, req } = args;
     if (req.payloadAPI === "local") return doc; // requests from local payload api don't require DTOs

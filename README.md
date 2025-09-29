@@ -1,6 +1,6 @@
 <picture>
-  <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/dc1362ca-c963-411d-8826-845b9a511bb4">
-  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/1ef2819b-91c7-440b-9707-583a580c0703">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/byte5digital/payload-assist/blob/master/.github/assets/gh-banner-light.png?raw=true">
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/byte5digital/payload-assist/blob/master/.github/assets/gh-banner-dark.png?raw=true">
   <img alt="Fallback image description" src="https://github.com/user-attachments/assets/1ef2819b-91c7-440b-9707-583a580c0703">
 </picture>
 
@@ -30,7 +30,6 @@ Utilities to add guardrails, DTO tooling, and ergonomic rules to Payload CMS pro
 - **DTOs**: First-class helpers to define, transform, validate, and enforce DTO-only responses.
 - **Ergonomics**: Thin wrappers to keep endpoints and collection reads consistent and secure.
 
-
 ## Installation
 
 ```bash
@@ -40,7 +39,6 @@ npm install payload-assist
 ```
 
 Peer deps: Payload v3+, Next v15+. Dependencies `class-transformer` and `reflect-metadata` are included in the package.
-
 
 ## API overview
 
@@ -77,29 +75,35 @@ export const MyCollection: CollectionConfig = {
 
 ### Initialize payload-assist
 
-The main `payloadAssist` function initializes the library, validates your payload config against defined rules, and returns the built config. You can customize the `ruleSet` and `transformAndValidate` function through options.
+The main `payloadAssist` function initializes the library and validates your payload config against defined rules. You can customize the `ruleSet` and `transformAndValidate` function through options.
 
 - **ruleSet**: An object map of named rules; merge defaults with your own, if required. Deactivate a default rule by setting the rule to `false`.
 - **rules**: `(config: payloadConfig) => boolean | void`; throw to fail with an actionable message and return true if the rule is satisfied.
 - **transformAndValidate**: `(dto: Dto, data: unknown) => Dto` Turn raw Payload data into typed DTOs.
 
 **Built-in rules:**
+
 - `disableQraphQL`: Ensures GraphQL is disabled in your config
 - `collectionsEndpointsUseWithResponse`: Ensures all collection endpoints use `withResponse`
 - `collectionsUseWithDtoReadHook`: Ensures all collections use `withDtoReadHook` in their afterRead hooks
 
 ```ts
+import { buildConfig } from "payload";
 import payloadAssist, { defaultConfig } from "payload-assist";
 
-export default payloadAssist({
+export default buildConfig({
   // your Payload config
-}, {
-  ruleSet: {
-    ...defaultConfig.ruleSet,
-
-    // add/override rules here
-    secretIsSet: (config) => config.secret?.length > 0 ? true : throw 'A secret needs to be set',
-  },
+  plugins: [
+    payloadAssist(
+      {
+        ruleSet: {
+          ...defaultConfig.ruleSet,
+          // add/override rules here
+          secretIsSet: (config) => config.secret?.length > 0 ? true : throw 'A secret needs to be set',
+        },
+      }
+    ),
+  ]
 });
 ```
 
@@ -137,7 +141,7 @@ Transform any raw Payload doc into a DTO. By default `transformAndValidate` uses
 ```ts
 import { transformAndValidate } from "payload-assist";
 
-const payloadDoc = await getPayloadDoc()
+const payloadDoc = await getPayloadDoc();
 const dto = transformAndValidate(MyCollectionDto, payloadDoc);
 ```
 

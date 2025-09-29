@@ -8,6 +8,7 @@ export default {
   ruleSet: {
     disableQraphQL: (config) => {
       if (config.graphQL?.disable !== true) throw `GraphQL is not disabled.`;
+      return true
     },
     collectionsEndpointsUseWithResponse: (config) =>
       config.collections?.every((collection) => {

@@ -8,17 +8,17 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fregistry.npmjs.org%2F@byte5digital%2Fpayload-assist&query=%24%5B%22dist-tags%22%5D.latest&prefix=v&label=NPM&style=for-the-badge&labelColor=ffffff&color=373E45">
   <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fregistry.npmjs.org%2F@byte5digital%2Fpayload-assist&query=%24%5B%22dist-tags%22%5D.latest&prefix=v&label=NPM&style=for-the-badge&labelColor=002634&color=E5E9EB">
-  <img alt="Assist for Payload" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fregistry.npmjs.org%2F@byte5digital%2Fpayload-assist&query=%24%5B%22dist-tags%22%5D.latest&prefix=v&label=NPM&style=for-the-badge&labelColor=ffffff&color=373E45">
+  <img alt="Assist for Payload" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fregistry.npmjs.org%2F@byte5digital%2Fpayload-assist&query=%24%5B%22dist-tags%22%5D.latest&prefix=v&label=NPM&style=for-the-badge&labelColor=002634&color=E5E9EB">
 </picture>
   <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/TESTS-PASSING-empty?style=for-the-badge&labelColor=ffffff&color=373E45">
   <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/badge/TESTS-PASSING-empty?style=for-the-badge&labelColor=002634&color=E5E9EB">
-  <img alt="Tests passing" src="https://img.shields.io/badge/TESTS-PASSING-empty?style=for-the-badge&labelColor=ffffff&color=373E45">
+  <img alt="Tests passing" src="https://img.shields.io/badge/TESTS-PASSING-empty?style=for-the-badge&labelColor=002634&color=E5E9EB">
 </picture>
   <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/LICENSE-MIT-empty?style=for-the-badge&labelColor=ffffff&color=373E45">
   <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/badge/LICENSE-MIT-empty?style=for-the-badge&labelColor=002634&color=E5E9EB">
-  <img alt="License MIT" src="https://img.shields.io/badge/LICENSE-MIT-empty?style=for-the-badge&labelColor=ffffff&color=373E45">
+  <img alt="License MIT" src="https://img.shields.io/badge/LICENSE-MIT-empty?style=for-the-badge&labelColor=002634&color=E5E9EB">
 </picture>
 </div>
 

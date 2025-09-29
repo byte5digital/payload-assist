@@ -22,7 +22,7 @@
 </picture>
 </div>
 
-# payload-assist
+# Assist for Payload
 
 Utilities to add guardrails, DTO tooling, and ergonomic rules to Payload CMS projects.
 
@@ -42,7 +42,7 @@ Peer deps: Payload v3+, Next v15+. Dependencies `class-transformer` and `reflect
 
 ## API overview
 
-- `payloadAssist(payloadConfig, options?)`: Main function that initializes payload-assist, validates your payload config against defined rules, and returns the built config.
+- `payloadAssist(payloadConfig, options?)`: Main function that initializes Assist for Payload, validates your payload config against defined rules, and returns the built config.
 - `defaultConfig`: Default config with built-in rules and transformAndValidate function (can be spread/overridden).
 - `Dto`: Base abstract class for response DTOs.
 - `transformAndValidate(Dto, data)`: Validate Payload data and transform to DTO. Uses the configured transformer/validator.
@@ -73,7 +73,7 @@ export const MyCollection: CollectionConfig = {
 
 ## Usage
 
-### Initialize payload-assist
+### Initialize Assist for Payload
 
 The main `payloadAssist` function initializes the library and validates your payload config against defined rules. You can customize the `ruleSet` and `transformAndValidate` function through options.
 

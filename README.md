@@ -1,6 +1,6 @@
 <picture>
-  <source media="(prefers-color-scheme: light)" srcset="https://github.com/byte5digital/payload-assist/blob/development/.github/assets/gh-banner-light.png?raw=true">
-  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/byte5digital/payload-assist/blob/development/.github/assets/gh-banner-dark.png?raw=true">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/byte5digital/payload-assist/blob/master/.github/assets/gh-banner-light.png?raw=true">
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/byte5digital/payload-assist/blob/master/.github/assets/gh-banner-dark.png?raw=true">
   <img alt="Fallback image description" src="https://github.com/user-attachments/assets/1ef2819b-91c7-440b-9707-583a580c0703">
 </picture>
 

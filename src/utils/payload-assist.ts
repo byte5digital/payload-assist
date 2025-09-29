@@ -36,5 +36,12 @@ export const payloadAssist =
       payloadConfig
     );
 
-    return payloadConfig;
+    return buildConfig(payloadConfig);
   };
+
+/**
+ * Resets internal module state for tests or reinitialization.
+ */
+export const resetPayloadAssist = (): void => {
+  payloadAssistConfig = undefined;
+};

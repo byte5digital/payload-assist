@@ -7,8 +7,8 @@ import { PayloadAssistConfig } from "./types/config";
 export default {
   ruleSet: {
     disableQraphQL: (config) => {
-      if (config.graphQL?.disable !== true) throw `GraphQL is not disabled.`;
-      return true
+      if (config.graphQL?.disable === true) return true;
+      throw `GraphQL is not disabled.`;
     },
     collectionsEndpointsUseWithResponse: (config) =>
       config.collections?.every((collection) => {
@@ -27,8 +27,11 @@ export default {
       }),
     collectionsUseWithDtoReadHook: (config) =>
       config.collections?.every((collection) => {
-        if (!collection.hooks?.afterRead)
-          throw `The collection "${collection.slug}" has an afterRead hook that does not use withDtoReadHook.`;
+        if (
+          !collection.hooks?.afterRead ||
+          collection.hooks.afterRead.length === 0
+        )
+          throw `The collection "${collection.slug}" has no afterRead hook that does use withDtoReadHook.`;
 
         return collection.hooks.afterRead.every((hook) => {
           const isWithDtoReadHook = (

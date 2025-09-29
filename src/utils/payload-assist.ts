@@ -1,6 +1,6 @@
 import { PayloadAssistConfig, PayloadAssistOptions } from "../types/config";
 import payloadAssistDefaultConfig from "../default.config";
-import { buildConfig, Config as PayloadConfig, Plugin } from "payload";
+import { Config as PayloadConfig, Plugin } from "payload";
 
 export { payloadAssistDefaultConfig as defaultConfig };
 

@@ -3,7 +3,6 @@
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/byte5digital/payload-assist/master/.github/assets/gh-banner-dark.png">
   <img alt="Assist for Payload" src="https://raw.githubusercontent.com/byte5digital/payload-assist/master/.github/assets/gh-banner-light.png">
 </picture>
-
 <div align="center" style="display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 12px;">
   <a href="https://www.npmjs.com/@byte5digital/payload-assist">
     <picture>

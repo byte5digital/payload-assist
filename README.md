@@ -1,9 +1,8 @@
 <picture>
   <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/byte5digital/payload-assist/master/.github/assets/gh-banner-light.png">
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/byte5digital/payload-assist/master/.github/assets/gh-banner-dark.png?raw=true">
-  <img alt="Assist for Payload" src="https://raw.githubusercontent.com/byte5digital/payload-assist/master/.github/assets/gh-banner-dark.png?raw=true">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/byte5digital/payload-assist/master/.github/assets/gh-banner-dark.png">
+  <img alt="Assist for Payload" src="https://raw.githubusercontent.com/byte5digital/payload-assist/master/.github/assets/gh-banner-light.png">
 </picture>
-
 <div align="center" style="display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 12px;">
   <a href="https://www.npmjs.com/@byte5digital/payload-assist">
     <picture>
@@ -35,9 +34,9 @@ Utilities to add guardrails, DTO tooling, and ergonomic rules to Payload CMS pro
 ## Installation
 
 ```bash
-yarn add payload-assist
+yarn add @byte5digital/payload-assist
 # or
-npm install payload-assist
+npm install @byte5digital/payload-assist
 ```
 
 Peer deps: Payload v3+, Next v15+. Dependencies `class-transformer` and `reflect-metadata` are included in the package.
@@ -58,7 +57,7 @@ Peer deps: Payload v3+, Next v15+. Dependencies `class-transformer` and `reflect
 A comprehensive type for Payload collection access control that includes all available access control methods.
 
 ```ts
-import { AccessControl } from "payload-assist";
+import { AccessControl } from "@byte5digital/payload-assist";
 
 export const MyCollection: CollectionConfig = {
   slug: "my-collection",
@@ -91,7 +90,7 @@ The main `payloadAssist` function initializes the library and validates your pay
 
 ```ts
 import { buildConfig } from "payload";
-import payloadAssist, { defaultConfig } from "payload-assist";
+import payloadAssist, { defaultConfig } from "@byte5digital/payload-assist";
 
 export default buildConfig({
   // your Payload config
@@ -117,7 +116,7 @@ Define exactly what leaves your API by modeling responses as DTOs. Only explicit
 It is important that all DTOs extend the `Dto` class. The example below shows the usage with the default `transformAndValidate`.
 
 ```ts
-import { Dto, Expose, Type } from "payload-assist";
+import { Dto, Expose, Type } from "@byte5digital/payload-assist";
 
 export class MediaResponse extends Dto {
   @Expose() url: string;
@@ -141,7 +140,7 @@ export class MyCollectionDto extends Dto {
 Transform any raw Payload doc into a DTO. By default `transformAndValidate` uses `class-transformer`, but it can be configured through the payloadAssist options.
 
 ```ts
-import { transformAndValidate } from "payload-assist";
+import { transformAndValidate } from "@byte5digital/payload-assist";
 
 const payloadDoc = await getPayloadDoc();
 const dto = transformAndValidate(MyCollectionDto, payloadDoc);
@@ -155,7 +154,7 @@ Use `withResponse` to guarantee your endpoints return DTOs (and nothing else). I
 
 ```ts
 import payload from "payload";
-import { withResponse, transformAndValidate } from "payload-assist";
+import { withResponse, transformAndValidate } from "@byte5digital/payload-assist";
 import { MyDataDto } from "path/to/dtos";
 
 export const MyCollection: CollectionConfig = {
@@ -195,7 +194,7 @@ So the order of the given DTOs should be: More specific first, default last.
 ```ts
 // src/collections/MyCollection.ts
 import { CollectionConfig } from "payload/types";
-import { withDtoReadHook } from "payload-assist";
+import { withDtoReadHook } from "@byte5digital/payload-assist";
 import { MyCollectionDto, MyCollectionAdminDto } from "path/to/dtos";
 
 export const MyCollection: CollectionConfig = {

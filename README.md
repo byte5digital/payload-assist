@@ -76,7 +76,8 @@ export const MyCollection: CollectionConfig = {
 
 ### Initialize Assist for Payload
 
-The main `payloadAssist` function initializes the library and validates your payload config against defined rules. You can customize the `ruleSet` and `transformAndValidate` function through options.
+The main `payloadAssist` function initializes the library, validates your payload config against defined rules, and returns the built config. You can customize the `ruleSet` and `transformAndValidate` function through options.
+payloadAssist is implemenented as a wrapper function and not as a payload plugin, to ensure it validates the raw config that is set by the user, instead of the config that was previously processed by other plugins and enriched by payload.
 
 - **ruleSet**: An object map of named rules; merge defaults with your own, if required. Deactivate a default rule by setting the rule to `false`.
 - **rules**: `(config: payloadConfig) => boolean | void`; throw to fail with an actionable message and return true if the rule is satisfied.
@@ -92,19 +93,15 @@ The main `payloadAssist` function initializes the library and validates your pay
 import { buildConfig } from "payload";
 import payloadAssist, { defaultConfig } from "@byte5digital/payload-assist";
 
-export default buildConfig({
+export default payloadAssist({
   // your Payload config
-  plugins: [
-    payloadAssist(
-      {
-        ruleSet: {
-          ...defaultConfig.ruleSet,
-          // add/override rules here
-          secretIsSet: (config) => config.secret?.length > 0 ? true : throw 'A secret needs to be set',
-        },
-      }
-    ),
-  ]
+}, {
+  ruleSet: {
+    ...defaultConfig.ruleSet,
+
+    // add/override rules here
+    secretIsSet: (config) => config.secret?.length > 0 ? true : throw 'A secret needs to be set',
+  },
 });
 ```
 
@@ -154,7 +151,10 @@ Use `withResponse` to guarantee your endpoints return DTOs (and nothing else). I
 
 ```ts
 import payload from "payload";
-import { withResponse, transformAndValidate } from "@byte5digital/payload-assist";
+import {
+  withResponse,
+  transformAndValidate,
+} from "@byte5digital/payload-assist";
 import { MyDataDto } from "path/to/dtos";
 
 export const MyCollection: CollectionConfig = {

@@ -31,7 +31,6 @@ Utilities to add guardrails, DTO tooling, and ergonomic rules to Payload CMS pro
 - **DTOs**: First-class helpers to define, transform, validate, and enforce DTO-only responses.
 - **Ergonomics**: Thin wrappers to keep endpoints and collection reads consistent and secure.
 
-
 ## Installation
 
 ```bash
@@ -41,7 +40,6 @@ npm install @byte5digital/payload-assist
 ```
 
 Peer deps: Payload v3+, Next v15+. Dependencies `class-transformer` and `reflect-metadata` are included in the package.
-
 
 ## API overview
 
@@ -79,12 +77,14 @@ export const MyCollection: CollectionConfig = {
 ### Initialize Assist for Payload
 
 The main `payloadAssist` function initializes the library, validates your payload config against defined rules, and returns the built config. You can customize the `ruleSet` and `transformAndValidate` function through options.
+payloadAssist is implemenented as a wrapper function and not as a payload plugin, to ensure it validates the raw config that is set by the user, instead of the config that was previously processed by other plugins and enriched by payload.
 
 - **ruleSet**: An object map of named rules; merge defaults with your own, if required. Deactivate a default rule by setting the rule to `false`.
 - **rules**: `(config: payloadConfig) => boolean | void`; throw to fail with an actionable message and return true if the rule is satisfied.
 - **transformAndValidate**: `(dto: Dto, data: unknown) => Dto` Turn raw Payload data into typed DTOs.
 
 **Built-in rules:**
+
 - `disableQraphQL`: Ensures GraphQL is disabled in your config
 - `collectionsEndpointsUseWithResponse`: Ensures all collection endpoints use `withResponse`
 - `collectionsUseWithDtoReadHook`: Ensures all collections use `withDtoReadHook` in their afterRead hooks
@@ -139,7 +139,7 @@ Transform any raw Payload doc into a DTO. By default `transformAndValidate` uses
 ```ts
 import { transformAndValidate } from "@byte5digital/payload-assist";
 
-const payloadDoc = await getPayloadDoc()
+const payloadDoc = await getPayloadDoc();
 const dto = transformAndValidate(MyCollectionDto, payloadDoc);
 ```
 
@@ -151,7 +151,10 @@ Use `withResponse` to guarantee your endpoints return DTOs (and nothing else). I
 
 ```ts
 import payload from "payload";
-import { withResponse, transformAndValidate } from "@byte5digital/payload-assist";
+import {
+  withResponse,
+  transformAndValidate,
+} from "@byte5digital/payload-assist";
 import { MyDataDto } from "path/to/dtos";
 
 export const MyCollection: CollectionConfig = {

@@ -14,3 +14,5 @@ export { Expose, Type } from "class-transformer";
 export type { PayloadAssistConfig, PayloadAssistOptions } from "./types/config";
 export type { RuleSet } from "./types/rule-set";
 export type { AccessControl } from "./types/access-control";
+
+export { default as PayloadAssistError } from "./types/PayloadAssistError";

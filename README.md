@@ -4,7 +4,7 @@
   <img alt="Assist for Payload" src="https://raw.githubusercontent.com/byte5digital/payload-assist/master/.github/assets/gh-banner-light.png">
 </picture>
 <div align="center" style="display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 12px;">
-  <a href="https://www.npmjs.com/@byte5digital/payload-assist">
+  <a href="https://www.npmjs.com/@byte5digital/payload-assist" style="text-decoration: none;">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fregistry.npmjs.org%2F@byte5digital%2Fpayload-assist&query=%24%5B%22dist-tags%22%5D.latest&prefix=v&label=NPM&style=for-the-badge&labelColor=ffffff&color=373E45">
       <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fregistry.npmjs.org%2F@byte5digital%2Fpayload-assist&query=%24%5B%22dist-tags%22%5D.latest&prefix=v&label=NPM&style=for-the-badge&labelColor=002634&color=E5E9EB">
@@ -91,18 +91,24 @@ payloadAssist is implemenented as a wrapper function and not as a payload plugin
 
 ```ts
 import { buildConfig } from "payload";
-import payloadAssist, { defaultConfig } from "@byte5digital/payload-assist";
+import payloadAssist, { defaultConfig, PayloadAssistError } from "@byte5digital/payload-assist";
 
-export default payloadAssist({
-  // your Payload config
-}, {
-  ruleSet: {
-    ...defaultConfig.ruleSet,
-
-    // add/override rules here
-    secretIsSet: (config) => config.secret?.length > 0 ? true : throw 'A secret needs to be set',
+export default payloadAssist(
+  {
+    // your Payload config
   },
-});
+  {
+    ruleSet: {
+      ...defaultConfig.ruleSet,
+
+      // add/override rules here
+      secretIsSet: (config) => {
+        if (config.secret?.length > 0) return true;
+        throw new PayloadAssistError("A secret needs to be set");
+      },
+    },
+  }
+);
 ```
 
 ---
@@ -236,8 +242,7 @@ If you love building smart solutions with real impact — we should talk.
 
 ## Support
 
-- [Issue Tracker](https://github.com/byte5digital/meilisearch-pro/issues)
-- [Discord Community](https://discord.gg/medusajs)
+- [Issue Tracker](https://github.com/byte5digital/payload-assist/issues)
 - [Email Support](mailto:support@byte5.de)
 
 ---

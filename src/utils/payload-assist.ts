@@ -1,5 +1,5 @@
-import { PayloadAssistConfig, PayloadAssistOptions } from "../types/config";
-import payloadAssistDefaultConfig from "../default.config";
+import { PayloadAssistConfig, PayloadAssistOptions } from "../types/config.js";
+import payloadAssistDefaultConfig from "../default.config.js";
 import { buildConfig, Config as PayloadConfig } from "payload";
 
 export { payloadAssistDefaultConfig as defaultConfig };

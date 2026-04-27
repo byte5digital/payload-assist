@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { NextResponse } from "next/server";
-import { Dto } from "../types/dto";
+import { Dto } from "../types/dto.js";
 
 describe("withResponse", async () => {
-  const { withResponse } = await import("../utils/with-response");
+  const { withResponse } = await import("../utils/with-response.js");
 
   class MyDto extends Dto {
     value: string = "ok";

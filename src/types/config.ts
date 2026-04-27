@@ -1,5 +1,5 @@
-import type { Dto } from "./dto";
-import type { RuleSet } from "./rule-set";
+import type { Dto } from "./dto.js";
+import type { RuleSet } from "./rule-set.js";
 
 export type PayloadAssistConfig = {
   ruleSet: RuleSet;

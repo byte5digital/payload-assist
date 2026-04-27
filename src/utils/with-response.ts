@@ -1,5 +1,5 @@
 import { PayloadRequest } from "payload";
-import { Dto } from "../types/dto";
+import { Dto } from "../types/dto.js";
 import { NextResponse } from "next/server";
 
 type ResponseObject =

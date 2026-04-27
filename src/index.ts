@@ -3,16 +3,16 @@ export {
   payloadAssist,
   payloadAssistConfig as config,
   defaultConfig,
-} from "./utils/payload-assist";
-export { Dto } from "./types/dto";
-export { withDtoReadHook } from "./utils/with-dto-read-hook";
-export { withResponse } from "./utils/with-response";
-export { transformAndValidate } from "./utils/transform-and-validate";
+} from "./utils/payload-assist.js";
+export { Dto } from "./types/dto.js";
+export { withDtoReadHook } from "./utils/with-dto-read-hook.js";
+export { withResponse } from "./utils/with-response.js";
+export { transformAndValidate } from "./utils/transform-and-validate.js";
 
 export { Expose, Type } from "class-transformer";
 
-export type { PayloadAssistConfig, PayloadAssistOptions } from "./types/config";
-export type { RuleSet } from "./types/rule-set";
-export type { AccessControl } from "./types/access-control";
+export type { PayloadAssistConfig, PayloadAssistOptions } from "./types/config.js";
+export type { RuleSet } from "./types/rule-set.js";
+export type { AccessControl } from "./types/access-control.js";
 
-export { default as PayloadAssistError } from "./types/PayloadAssistError";
+export { default as PayloadAssistError } from "./types/PayloadAssistError.js";

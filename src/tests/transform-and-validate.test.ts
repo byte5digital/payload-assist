@@ -1,13 +1,13 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import correctPayloadConfig from "./utils/correctPayloadConfig";
-import MyCollectionDto from "./utils/myCollectionDTO";
+import correctPayloadConfig from "./utils/correctPayloadConfig.js";
+import MyCollectionDto from "./utils/myCollectionDTO.js";
 
 describe("transformAndValidate", async () => {
   const { transformAndValidate } = await import(
-    "../utils/transform-and-validate"
+    "../utils/transform-and-validate.js"
   );
   const { payloadAssist, resetPayloadAssist } = await import(
-    "../utils/payload-assist"
+    "../utils/payload-assist.js"
   );
 
   beforeEach(() => {

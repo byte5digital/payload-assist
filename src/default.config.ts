@@ -1,8 +1,8 @@
-import { withResponse } from "./utils/with-response";
-import { withDtoReadHook } from "./utils/with-dto-read-hook";
+import { withResponse } from "./utils/with-response.js";
+import { withDtoReadHook } from "./utils/with-dto-read-hook.js";
 import { plainToInstance } from "class-transformer";
 import "reflect-metadata";
-import { PayloadAssistConfig } from "./types/config";
+import { PayloadAssistConfig } from "./types/config.js";
 
 export default {
   ruleSet: {

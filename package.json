@@ -33,6 +33,7 @@
   ],
   "author": "byte5",
   "license": "MIT",
+  "type": "module",
   "exports": {
     ".": {
       "import": "./dist/index.js",

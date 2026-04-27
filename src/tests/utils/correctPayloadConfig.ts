@@ -1,7 +1,7 @@
-import { withDtoReadHook } from "../../utils/with-dto-read-hook";
-import { withResponse } from "../../utils/with-response";
+import { withDtoReadHook } from "../../utils/with-dto-read-hook.js";
+import { withResponse } from "../../utils/with-response.js";
 import { vi } from "vitest";
-import MyCollectionDto from "./myCollectionDTO";
+import MyCollectionDto from "./myCollectionDTO.js";
 
 export const correctPayloadConfig = {
   collections: [

@@ -1,6 +1,6 @@
 import { beforeEach, describe, it, vi } from "vitest";
 import { NextResponse } from "next/server";
-import correctPayloadConfig from "./utils/correctPayloadConfig";
+import correctPayloadConfig from "./utils/correctPayloadConfig.js";
 
 describe("config check", async () => {
   vi.mock("payload", async () => {
@@ -10,7 +10,7 @@ describe("config check", async () => {
   });
 
   const { payloadAssist, resetPayloadAssist } = await import(
-    "../utils/payload-assist"
+    "../utils/payload-assist.js"
   );
 
   beforeEach(() => {

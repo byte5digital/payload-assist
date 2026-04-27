@@ -1,6 +1,6 @@
-import { Dto } from "../types/dto";
-import { payloadAssistConfig as payloadAssistConfig } from "./payload-assist";
-import PayloadAssistError from "../types/PayloadAssistError";
+import { Dto } from "../types/dto.js";
+import { payloadAssistConfig as payloadAssistConfig } from "./payload-assist.js";
+import PayloadAssistError from "../types/PayloadAssistError.js";
 
 export const transformAndValidate = (dto: new () => Dto, data: unknown) => {
   if (!payloadAssistConfig)

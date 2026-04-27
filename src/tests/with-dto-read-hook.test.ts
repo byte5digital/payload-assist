@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import type { CollectionAfterReadHook } from "payload";
-import { Dto } from "../types/dto";
-import correctPayloadConfig from "./utils/correctPayloadConfig";
+import { Dto } from "../types/dto.js";
+import correctPayloadConfig from "./utils/correctPayloadConfig.js";
 import { Expose } from "class-transformer";
 
 class AdminDto extends Dto {
@@ -15,9 +15,9 @@ class DefaultDto extends Dto {
 }
 
 describe.skip("withDtoReadHook", async () => {
-  const { withDtoReadHook } = await import("../utils/with-dto-read-hook");
+  const { withDtoReadHook } = await import("../utils/with-dto-read-hook.js");
   const { payloadAssist, resetPayloadAssist } = await import(
-    "../utils/payload-assist"
+    "../utils/payload-assist.js"
   );
 
   beforeEach(() => {
